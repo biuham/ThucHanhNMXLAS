@@ -1,89 +1,56 @@
-Nhập Môn Xử Lý Ảnh Số - Lab 2
+# Nhập Môn Xử Lý Ảnh Số - Lab 2  
 
-Biến Đổi Cường Độ Ảnh Grayscale
+**Sinh viên thực hiện:** Nguyễn Hữu Thịnh **MSSV:** 2174802010323
+**Môn học:** Nhập môn Xử lý ảnh số  
+**Giảng viên:** Đỗ Hữu Quân
 
-Sinh viên thực hiện: Nguyễn Hữu Thịnh MSSV: 2174802010323
+---
 
-Môn học: Nhập môn Xử lý ảnh số
+## Giới thiệu  
+Bài lab này trình bày các phép biến đổi cường độ ảnh cơ bản để tăng cường tương phản và chi tiết hình ảnh[1].
 
-Giảng viên: Đỗ Hữu Quân
+---
 
-Giới thiệu
-Bài lab này thực hiện các phép biến đổi cường độ cơ bản trên ảnh xám để:
+## Các phép biến đổi  
 
-Tăng cường độ tương phản và chất lượng ảnh
+### 1. Negative Transformation  
+- **Ý chính:** Đảo ngược giá trị pixel, biến vùng sáng thành tối và ngược lại[2].  
+- **Công thức:** $$s = L - 1 - r$$[3].  
+- **Ví dụ:** Pixel 100 → 155 (255 - 100)[4].
 
-Làm nổi bật chi tiết trong vùng tối/sáng
+### 2. Log Transformation  
+- **Ý chính:** Khuếch đại pixel nhỏ, làm rõ vùng tối[5].  
+- **Công thức:** $$s = c \times \log(1 + r)$$[6].  
+- **Ví dụ:** Pixel 10 sáng lên nhiều hơn pixel 200.
 
-Áp dụng lọc tần số với biến đổi Fourier
+### 3. Gamma Correction  
+- **Ý chính:** Điều chỉnh độ sáng tổng thể bằng tham số γ[7].  
+- **Công thức:** $$s = c \times r^\gamma$$[8].  
+- **Ví dụ:** γ = 0.5 → ảnh sáng; γ = 2.0 → ảnh tối.
 
-Công nghệ sử dụng
-Python: Ngôn ngữ chính
+### 4. Histogram Equalization  
+- **Ý chính:** Phân phối lại mức xám để tăng độ tương phản sử dụng CDF[9].  
+- **Ví dụ:** Dải 50–150 mở rộng thành 0–255.
 
-PIL/NumPy: Xử lý ảnh và mảng
+### 5. Contrast Stretching  
+- **Ý chính:** Kéo giãn tuyến tính dải pixel[10].  
+- **Công thức:** $$s = \frac{255\,(r - a)}{b - a}$$.
 
-SciPy: Biến đổi Fourier
+### 6. FFT & Butterworth Filtering  
+- **FFT:** Chuyển ảnh sang miền tần số để lọc nhiễu hoặc nâng cao cạnh[11].  
+- **Butterworth:** $$H(u,v) = \frac{1}{1 + (D(u,v)/D_0)^{2n}}$$[12].
 
-Matplotlib: Hiển thị kết quả
+---
+## Hướng dẫn sử dụng  
+1. Cài đặt: `pip install pillow numpy matplotlib scipy`[13]  
+2. Chạy: Mở Jupyter Notebook và thực thi các cell từng bước[14]  
+3. Tùy chỉnh: Thay đổi tham số γ, D₀ để quan sát kết quả[15].
 
-Chi tiết các phép biến đổi
-1. Biến đổi ảnh đảo ngược (Negative Transformation)
-Ý chính: Đảo ngược giá trị pixel để biến vùng sáng thành tối
+---
 
-Ví dụ: Pixel 100 → 255 - 100 = 155
-
-Ứng dụng: Ảnh X-ray, CT scan
-
-2. Biến đổi logarit (Log Transformation)
-Ý chính: Khuếch đại pixel nhỏ, làm rõ vùng tối
-
-s=c×log(1+r)
-
-Ví dụ: Pixel tối (10) được làm sáng nhiều hơn pixel sáng (200)
-
-Ứng dụng: Ảnh vệ tinh, ảnh y khoa
-
-3. Biến đổi Gamma (Power-law Transformation)
-Ý chính: Điều chỉnh độ sáng tổng thể
-
-Ví dụ:
-
-γ < 1 (0.5): ảnh sáng lên
-
-γ > 1 (2.0): ảnh tối đi
-
-Ứng dụng: Hiệu chỉnh màn hình
-
-4. Cân bằng Histogram
-Ý chính: Phân bố lại mức xám để tăng tương phản
-
-Nguyên lý: Sử dụng hàm phân phối tích lũy (CDF)
-
-Ví dụ: Ảnh tối (50-150) → mở rộng (0-255)
-
-5. Kéo giãn tương phản (Contrast Stretching)
-Ý chính: Mở rộng dải pixel tuyến tính
- 
-Ví dụ: Dải (50-200) → (0-255)
-
-6. Biến đổi Fourier & Lọc Butterworth
-Ý chính:
-
-FFT: Chuyển sang miền tần số
-Lọc thông thấp: Làm mịn, khử nhiễu
-Lọc thông cao: Làm nổi cạnh
-Ví dụ: D₀ = 30 quyết định ngưỡng lọc
-   
-Hướng dẫn sử dụng
-Cài đặt: pip install pillow numpy matplotlib scipy
-
-Chạy: Mở Jupyter Notebook và thực thi từng cell
-
-Tùy chỉnh: Thay đổi tham số gamma, D₀ để quan sát hiệu ứng
-
-Tài liệu tham khảo
-Digital Image Processing - Rafael C. Gonzalez
-
-Slide bài giảng - Văn Lang University
-
-SciPy Documentation
+## Tài liệu tham khảo  
+1. Gonzalez R.C., Woods R.E., Digital Image Processing.  
+2. Jain A.K., Fundamentals of Digital Image Processing.  
+3. Oppenheim A.V., Schafer R.W., Discrete-Time Signal Processing.  
+4. Russ J.C., The Image Processing Handbook.  
+5. Slide bài giảng Nhập môn Xử lý ảnh số - Văn Lang University
