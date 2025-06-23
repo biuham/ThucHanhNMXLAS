@@ -1,8 +1,11 @@
 Nhập Môn Xử Lý Ảnh Số - Lab 2
 
 Biến Đổi Cường Độ Ảnh Grayscale
+
 Sinh viên thực hiện: Nguyễn Hữu Thịnh MSSV: 2174802010323
+
 Môn học: Nhập môn Xử lý ảnh số
+
 Giảng viên: Đỗ Hữu Quân
 
 Giới thiệu
