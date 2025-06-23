@@ -16,22 +16,22 @@ Bài lab này trình bày các phép biến đổi cường độ ảnh cơ bả
 ## Các phép biến đổi  
 
 ### 1. Negative Transformation  
-- **Ý chính:** Đảo ngược giá trị pixel, biến vùng sáng thành tối và ngược lại[2].  
-- **Công thức:** $$s = L - 1 - r$$[3].  
-- **Ví dụ:** Pixel 100 → 155 (255 - 100)[4].
+- **Ý chính:** Đảo ngược giá trị pixel, biến vùng sáng thành tối và ngược lại.  
+- **Công thức:** $$s = L - 1 - r$$.  
+- **Ví dụ:** Pixel 100 → 155 (255 - 100).
 
 ### 2. Log Transformation  
-- **Ý chính:** Khuếch đại pixel nhỏ, làm rõ vùng tối[5].  
-- **Công thức:** $$s = c \times \log(1 + r)$$[6].  
+- **Ý chính:** Khuếch đại pixel nhỏ, làm rõ vùng tối.  
+- **Công thức:** $$s = c \times \log(1 + r)$$.  
 - **Ví dụ:** Pixel 10 sáng lên nhiều hơn pixel 200.
 
 ### 3. Gamma Correction  
-- **Ý chính:** Điều chỉnh độ sáng tổng thể bằng tham số γ[7].  
-- **Công thức:** $$s = c \times r^\gamma$$[8].  
+- **Ý chính:** Điều chỉnh độ sáng tổng thể bằng tham số γ.  
+- **Công thức:** $$s = c \times r^\gamma$$.  
 - **Ví dụ:** γ = 0.5 → ảnh sáng; γ = 2.0 → ảnh tối.
 
 ### 4. Histogram Equalization  
-- **Ý chính:** Phân phối lại mức xám để tăng độ tương phản sử dụng CDF[9].  
+- **Ý chính:** Phân phối lại mức xám để tăng độ tương phản sử dụng CDF.  
 - **Ví dụ:** Dải 50–150 mở rộng thành 0–255.
 
 ### 5. Contrast Stretching  
