@@ -1,4 +1,4 @@
-# Nhập Môn Xử Lý Ảnh Số - Lab 2  
+# Nhập Môn Xử Lý Ảnh Số - Lab 4  
 
 **Sinh viên thực hiện:** Nguyễn Hữu Thịnh **MSSV:** 2174802010323
 
@@ -9,50 +9,35 @@
 ---
 
 ## Giới thiệu  
-Bài lab này trình bày các phép biến đổi cường độ ảnh cơ bản để tăng cường tương phản và chi tiết hình ảnh[1].
+## Phân vùng ảnh là chia ảnh thành các vùng đồng nhất để tách nền và đối tượng.  
+## Kết hợp với biến đổi morphology giúp loại nhiễu và lấp đầy lỗ trống, tiền xử lý cho bài toán nhận dạng.  
 
----
+## 1. Phân vùng theo Histogram (Thresholding)  
+## 1.1 Otsu’s Method  
+## - Ý tưởng: Tự động chọn ngưỡng tối ưu để phân tách hai lớp sáng–tối.  
+## - Công thức: Chọn t* minimize σ²w(t) = ω₀(t)σ₀²(t) + ω₁(t)σ₁²(t).  
+## - Ví dụ: Nếu histogram có hai đỉnh tại 50 và 200, t* ≈ 125 để tách hai vùng.  
 
-## Các phép biến đổi  
+## 1.2 Adaptive Thresholding  
+## - Ý tưởng: Tính ngưỡng riêng cho từng biến nhỏ (block) nhằm xử lý điều kiện ánh sáng không đồng nhất.  
+## - Công thức: t(x,y) = mean(block) – C.  
+## - Ví dụ: Với block 39×39 và C=10, ngưỡng động cho phép tách rõ đối tượng trên nền.  
 
-### 1. Negative Transformation  
-- **Ý chính:** Đảo ngược giá trị pixel, biến vùng sáng thành tối và ngược lại.  
-- **Công thức:** $$s = L - 1 - r$$.  
-- **Ví dụ:** Pixel 100 → 155 (255 - 100).
+## 2. Phân vùng theo Region (Watershed)  
+## - Ý tưởng: Xem ảnh grayscale như địa hình, “ngập nước” từ các marker để phân chia vùng.  
+## - Bước 1: Threshold + erosion → sure foreground.  
+## - Bước 2: Distance transform để xác định marker.  
+## - Bước 3: Áp watershed trên ảnh gốc với marker → phân vùng.  
+## - Ví dụ: Phân tách từng hạt giống (cell) trên nền trắng thành vùng riêng.  
 
-### 2. Log Transformation  
-- **Ý chính:** Khuếch đại pixel nhỏ, làm rõ vùng tối.  
-- **Công thức:** $$s = c \times \log(1 + r)$$.  
-- **Ví dụ:** Pixel 10 sáng lên nhiều hơn pixel 200.
-
-### 3. Gamma Correction  
-- **Ý chính:** Điều chỉnh độ sáng tổng thể bằng tham số γ.  
-- **Công thức:** $$s = c \times r^\gamma$$.  
-- **Ví dụ:** γ = 0.5 → ảnh sáng; γ = 2.0 → ảnh tối.
-
-### 4. Histogram Equalization  
-- **Ý chính:** Phân phối lại mức xám để tăng độ tương phản sử dụng CDF.  
-- **Ví dụ:** Dải 50–150 mở rộng thành 0–255.
-
-### 5. Contrast Stretching  
-- **Ý chính:** Kéo giãn tuyến tính dải pixel.  
-- **Công thức:** $$s = \frac{255\,(r - a)}{b - a}$$.
-
-### 6. FFT & Butterworth Filtering  
-- **FFT:** Chuyển ảnh sang miền tần số để lọc nhiễu hoặc nâng cao cạnh.  
-- **Butterworth:** $$H(u,v) = \frac{1}{1 + (D(u,v)/D_0)^{2n}}$$.
-
----
-## Hướng dẫn sử dụng  
-1. Cài đặt: `pip install pillow numpy matplotlib scipy`  
-2. Chạy: Mở Jupyter Notebook và thực thi các cell từng bước. 
-3. Tùy chỉnh: Thay đổi tham số γ, D₀ để quan sát kết quả.
-
----
+## 3. Biến đổi Morphology  
+## - Dilation (A ⊕ B): Mở rộng vùng foreground.  
+## - Erosion (A ⊖ B): Thu nhỏ vùng foreground.  
+## - Opening (A ◦ B = (A ⊖ B) ⊕ B): Loại bỏ nhiễu nhỏ.  
+## - Closing (A • B = (A ⊕ B) ⊖ B): Lấp đầy lỗ hổng, nối vùng tách rời.  
+## - Ví dụ: Với structuring element 3×3 hình dấu cộng, dilation nở 1px mọi hướng, erosion co 1px.  
 
 ## Tài liệu tham khảo  
-1. Gonzalez R.C., Woods R.E., Digital Image Processing.  
-2. Jain A.K., Fundamentals of Digital Image Processing.  
-3. Oppenheim A.V., Schafer R.W., Discrete-Time Signal Processing.  
-4. Russ J.C., The Image Processing Handbook.  
-5. Slide bài giảng Nhập môn Xử lý ảnh số - Văn Lang University
+## - Gonzalez & Woods, _Digital Image Processing_  
+## - OpenCV Docs: https://docs.opencv.org/  
+## - scikit-image: https://scikit-image.org/  
