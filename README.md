@@ -1,57 +1,113 @@
 # Nhập Môn Xử Lý Ảnh Số - Lab 4  
-
-**Sinh viên thực hiện:** Nguyễn Hữu Thịnh 
+## **Phân Vùng Ảnh & Biến Đổi Đối Tượng**  
+**Sinh viên thực hiện:** Nguyễn Hữu Thịnh
 
 **MSSV:** 2174802010323
 
 **Môn học:** Nhập môn Xử lý ảnh số  
 
-**Giảng viên:** Đỗ Hữu Quân
+**Giảng viên:** Đỗ Hữu Quân  
 
 ---
 
-## Giới thiệu  
-Bài lab tập trung vào các kỹ thuật phân vùng ảnh (image segmentation) và biến đổi hình thái học. Qua bài này, sinh viên sẽ:  
-- Hiểu và thực hành phân vùng ảnh theo histogram và region  
-- Áp dụng các phép biến đổi hình thái học cơ bản  
+## Giới thiệu
+
+Bài lab tập trung vào các kỹ thuật **phân vùng ảnh (image segmentation)** và **biến đổi hình thái học (morphological transformations)**. Qua bài này, sinh viên sẽ:
+
+- Hiểu và thực hành phân vùng ảnh theo histogram và region
+- Áp dụng các phép biến đổi hình thái học cơ bản
 - Thực hiện các thao tác chọn và biến đổi đối tượng trong ảnh
 
-## Công nghệ sử dụng  
-- **Python**: Ngôn ngữ chính  
-- **OpenCV**: Xử lý ảnh máy tính  
-- **PIL (Pillow)**: Đọc/ghi ảnh  
-- **NumPy**: Xử lý mảng dữ liệu ảnh  
-- **SciPy**: Hình thái học (morphology)  
-- **scikit-image**: Lọc và phân ngưỡng  
-- **Matplotlib**: Hiển thị ảnh  
+---
 
-## 1. Phân vùng theo Histogram (Thresholding)  
-### 1.1 Otsu’s Method  
-- Ý tưởng: Tự động chọn ngưỡng tối ưu để phân tách hai lớp sáng–tối.  
-- Công thức: Chọn t* minimize σ²w(t) = ω₀(t)σ₀²(t) + ω₁(t)σ₁²(t).  
-- Ví dụ: Nếu histogram có hai đỉnh tại 50 và 200, t* ≈ 125 để tách hai vùng.  
+## Công nghệ sử dụng
 
-### 1.2 Adaptive Thresholding  
-- Ý tưởng: Tính ngưỡng riêng cho từng biến nhỏ (block) nhằm xử lý điều kiện ánh sáng không đồng nhất.  
-- Công thức: t(x,y) = mean(block) – C.  
-- Ví dụ: Với block 39×39 và C=10, ngưỡng động cho phép tách rõ đối tượng trên nền.  
+- **Python**: Ngôn ngữ chính
+- **OpenCV**: Xử lý ảnh máy tính
+- **Pillow (PIL)**: Đọc và ghi ảnh
+- **NumPy**: Xử lý mảng dữ liệu ảnh
+- **SciPy**: Biến đổi hình thái học
+- **scikit-image**: Lọc và phân ngưỡng
+- **Matplotlib**: Hiển thị ảnh
 
-## 2. Phân vùng theo Region (Watershed)  
-- Ý tưởng: Xem ảnh grayscale như địa hình, “ngập nước” từ các marker để phân chia vùng.  
-- Bước 1: Threshold + erosion → sure foreground.  
-- Bước 2: Distance transform để xác định marker.  
-- Bước 3: Áp watershed trên ảnh gốc với marker → phân vùng.  
-- Ví dụ: Phân tách từng hạt giống (cell) trên nền trắng thành vùng riêng.  
+---
 
-## 3. Biến đổi Morphology  
-- Dilation (A ⊕ B): Mở rộng vùng foreground.  
-- Erosion (A ⊖ B): Thu nhỏ vùng foreground.  
-- Opening (A ◦ B = (A ⊖ B) ⊕ B): Loại bỏ nhiễu nhỏ.  
-- Closing (A • B = (A ⊕ B) ⊖ B): Lấp đầy lỗ hổng, nối vùng tách rời.  
-- Ví dụ: Với structuring element 3×3 hình dấu cộng, dilation nở 1px mọi hướng, erosion co 1px.  
+## Chi tiết phương pháp & kỹ thuật
 
-## Tài liệu tham khảo  
-- Gonzalez & Woods, _Digital Image Processing_  
-- OpenCV Docs: https://docs.opencv.org/  
-- scikit-image: https://scikit-image.org/
-- Slide bài giảng Nhập môn Xử lý ảnh số - Văn Lang University 
+### 1. Phân vùng ảnh theo Histogram
+
+#### Otsu’s Thresholding
+
+**Ý tưởng:** Tìm ngưỡng tự động sao cho độ chênh lệch giữa các lớp được tối đa.
+
+**Code mẫu:**
+```python
+from skimage.filters.thresholding import threshold_otsu
+
+thres = threshold_otsu(image_array)
+segmented = image_array > thres
+```
+
+#### Adaptive Thresholding
+
+**Ý tưởng:** Tính ngưỡng cục bộ theo từng vùng nhỏ thay vì dùng một ngưỡng toàn ảnh.
+
+**Code mẫu:**
+```python
+from skimage.filters import threshold_local
+
+local_thresh = threshold_local(image_array, 39, offset=10)
+binary_adaptive = image_array > local_thresh
+```
+
+---
+
+### 2. Phân vùng ảnh theo Region - Thuật toán Watershed
+
+**Quy trình:**
+- Chuyển ảnh sang grayscale
+- Phân ngưỡng nhị phân với Otsu
+- Tính biến đổi khoảng cách (distance transform)
+- Áp dụng Watershed
+
+**Code mẫu:**
+```python
+import cv2
+from scipy.ndimage import label
+
+gray = cv2.cvtColor(data, cv2.COLOR_BGR2GRAY)
+_, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+
+dist_trans = cv2.distanceTransform(binary, cv2.DIST_L2, 3)
+labelled, n_obj = label(dist_trans)
+
+cv2.watershed(data, labelled)
+```
+
+---
+
+### 3. Biến đổi hình thái học (Morphological Transformations)
+
+| Phép toán     | Mục đích            | Code mẫu |
+|---------------|---------------------|----------|
+| **Dilation**  | Mở rộng đối tượng   | `nd.binary_dilation(data, iterations=50)` |
+| **Erosion**   | Thu nhỏ đối tượng   | `nd.binary_erosion(data, structure=s, iterations=50)` |
+| **Opening**   | Loại bỏ nhiễu       | `nd.binary_opening(data, structure=s, iterations=25)` |
+| **Closing**   | Lấp lỗ hổng         | `nd.binary_closing(data, structure=s, iterations=50)` |
+
+#### Structuring Element (Cấu trúc phần tử)
+
+```python
+s = [[0, 1, 0],
+     [1, 1, 1],
+     [0, 1, 0]]
+```
+
+---
+
+## Tài liệu tham khảo
+
+- [Digital Image Processing - Rafael C. Gonzalez](https://www.amazon.com/Digital-Image-Processing-Rafael-Gonzalez/dp/013168728X)  
+- [Scikit-image Documentation](https://scikit-image.org/)  
+- [OpenCV Documentation](https://docs.opencv.org/)  
+- Slide bài giảng Nhập môn Xử lý ảnh số - Văn Lang University
