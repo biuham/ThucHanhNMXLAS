@@ -1,6 +1,8 @@
 # Nhập Môn Xử Lý Ảnh Số - Lab 4  
 
-**Sinh viên thực hiện:** Nguyễn Hữu Thịnh **MSSV:** 2174802010323
+**Sinh viên thực hiện:** Nguyễn Hữu Thịnh 
+
+**MSSV:** 2174802010323
 
 **Môn học:** Nhập môn Xử lý ảnh số  
 
