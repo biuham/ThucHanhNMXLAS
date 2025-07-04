@@ -1,113 +1,143 @@
-# Nhập Môn Xử Lý Ảnh Số - Lab 4  
-## **Phân Vùng Ảnh & Biến Đổi Đối Tượng**  
+# Nhập Môn Xử Lý Ảnh Số - Lab 5  
+## **Xác Định Đối Tượng Trong Ảnh**  
 **Sinh viên thực hiện:** Nguyễn Hữu Thịnh
 
-**MSSV:** 2174802010323
+**MSSV:** 2174802010323  
 
 **Môn học:** Nhập môn Xử lý ảnh số  
 
-**Giảng viên:** Đỗ Hữu Quân  
+**Giảng viên:** Đỗ Hữu Quân
 
 ---
 
-## Giới thiệu
+## Mục tiêu
 
-Bài lab tập trung vào các kỹ thuật **phân vùng ảnh (image segmentation)** và **biến đổi hình thái học (morphological transformations)**. Qua bài này, sinh viên sẽ:
-
-- Hiểu và thực hành phân vùng ảnh theo histogram và region
-- Áp dụng các phép biến đổi hình thái học cơ bản
-- Thực hiện các thao tác chọn và biến đổi đối tượng trong ảnh
-
----
-
-## Công nghệ sử dụng
-
-- **Python**: Ngôn ngữ chính
-- **OpenCV**: Xử lý ảnh máy tính
-- **Pillow (PIL)**: Đọc và ghi ảnh
-- **NumPy**: Xử lý mảng dữ liệu ảnh
-- **SciPy**: Biến đổi hình thái học
-- **scikit-image**: Lọc và phân ngưỡng
-- **Matplotlib**: Hiển thị ảnh
+- Gán nhãn các vùng ảnh để phân biệt đối tượng  
+- Phân vùng ảnh theo Region  
+- Dò tìm cạnh và hình dạng đối tượng  
+- Nhận diện hình học (đường thẳng, đường tròn)  
+- So khớp ảnh (image matching)  
 
 ---
 
-## Chi tiết phương pháp & kỹ thuật
+## Công cụ sử dụng
 
-### 1. Phân vùng ảnh theo Histogram
-
-#### Otsu’s Thresholding
-
-**Ý tưởng:** Tìm ngưỡng tự động sao cho độ chênh lệch giữa các lớp được tối đa.
-
-**Code mẫu:**
-```python
-from skimage.filters.thresholding import threshold_otsu
-
-thres = threshold_otsu(image_array)
-segmented = image_array > thres
-```
-
-#### Adaptive Thresholding
-
-**Ý tưởng:** Tính ngưỡng cục bộ theo từng vùng nhỏ thay vì dùng một ngưỡng toàn ảnh.
-
-**Code mẫu:**
-```python
-from skimage.filters import threshold_local
-
-local_thresh = threshold_local(image_array, 39, offset=10)
-binary_adaptive = image_array > local_thresh
-```
+- Python + OpenCV  
+- NumPy  
+- Matplotlib  
 
 ---
 
-### 2. Phân vùng ảnh theo Region - Thuật toán Watershed
+## Các kỹ thuật chính & công thức
 
-**Quy trình:**
-- Chuyển ảnh sang grayscale
-- Phân ngưỡng nhị phân với Otsu
-- Tính biến đổi khoảng cách (distance transform)
-- Áp dụng Watershed
+### 1. Gán nhãn ảnh (Labeling)
 
-**Code mẫu:**
-```python
-import cv2
-from scipy.ndimage import label
+**Mục đích:**  
+- Phân biệt các đối tượng riêng biệt trong ảnh nhị phân
 
-gray = cv2.cvtColor(data, cv2.COLOR_BGR2GRAY)
-_, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+**Nguyên lý:**  
+- Mỗi vùng liên thông (connected component) được gán một nhãn khác nhau  
+- Các pixel thuộc cùng một đối tượng có cùng giá trị
 
-dist_trans = cv2.distanceTransform(binary, cv2.DIST_L2, 3)
-labelled, n_obj = label(dist_trans)
+**Ứng dụng:**  
+- Đếm số lượng đối tượng, phân tích hình dạng
 
-cv2.watershed(data, labelled)
+---
+
+### 2. Dò cạnh theo chiều dọc
+
+**Ý tưởng:**  
+- Dò sự thay đổi cường độ pixel theo chiều dọc bằng phép trừ hoặc dịch ảnh
+
+**Ví dụ:**  
+- Dùng `shift` ảnh 1 pixel theo trục y, sau đó lấy hiệu để phát hiện biên
+
+---
+
+### 3. Sobel Filter
+
+**Mục đích:**  
+- Dò cạnh theo hướng x, y bằng toán tử tích chập (convolution)
+
+**Kernel Sobel:**  
+- Dọc (Gy):  
+  ```
+  [-1 -2 -1]
+  [ 0  0  0]
+  [ 1  2  1]
+  ```
+- Ngang (Gx):  
+  ```
+  [-1  0  1]
+  [-2  0  2]
+  [-1  0  1]
+  ```
+
+**Công thức biên độ gradient:**  
+```math
+G = \sqrt{G_x^2 + G_y^2}
 ```
 
 ---
 
-### 3. Biến đổi hình thái học (Morphological Transformations)
+### 4. Xác định góc của đối tượng
 
-| Phép toán     | Mục đích            | Code mẫu |
-|---------------|---------------------|----------|
-| **Dilation**  | Mở rộng đối tượng   | `nd.binary_dilation(data, iterations=50)` |
-| **Erosion**   | Thu nhỏ đối tượng   | `nd.binary_erosion(data, structure=s, iterations=50)` |
-| **Opening**   | Loại bỏ nhiễu       | `nd.binary_opening(data, structure=s, iterations=25)` |
-| **Closing**   | Lấp lỗ hổng         | `nd.binary_closing(data, structure=s, iterations=50)` |
+**Ý tưởng:**  
+- Dựa vào biên và hình dạng để tính toán góc nghiêng hoặc hướng của đối tượng  
+- Có thể dùng moment hoặc vector gradient
 
-#### Structuring Element (Cấu trúc phần tử)
+---
 
-```python
-s = [[0, 1, 0],
-     [1, 1, 1],
-     [0, 1, 0]]
+### 5. Hough Transform
+
+#### a. Dò đường thẳng
+
+**Công thức đường thẳng:**  
+```math
+\rho = x \cos\theta + y \sin\theta
 ```
+
+**Ý tưởng:**  
+- Mỗi điểm ảnh biên sẽ biểu diễn thành một đường trong không gian Hough  
+- Giao điểm của nhiều đường → đường thẳng thực sự
+
+#### b. Dò đường tròn
+
+**Công thức đường tròn:**  
+```math
+(x - a)^2 + (y - b)^2 = r^2
+```
+
+**Ý tưởng:**  
+- Tìm các tập hợp điểm biên tạo thành đường tròn với bán kính r
+
+---
+
+### 6. Image Matching
+
+**Mục tiêu:**  
+- Tìm điểm tương đồng giữa hai ảnh
+
+**Các bước:**
+
+1. Phát hiện điểm đặc trưng (Harris Corner Detector)  
+2. Xây vùng chọn (patch) quanh điểm đặc trưng  
+3. Tính mô tả đặc trưng (descriptor)  
+4. So khớp descriptor giữa hai ảnh (dùng SSD, NCC, hoặc SIFT/ORB)
+
+---
+
+
+## Ghi chú
+
+- Gán nhãn giúp phân biệt các đối tượng riêng biệt trong ảnh nhị phân  
+- Sobel và Hough là công cụ mạnh để phát hiện biên và hình học  
+- Image Matching là nền tảng cho nhận diện ảnh, theo dõi đối tượng  
 
 ---
 
 ## Tài liệu tham khảo
 
-- [Digital Image Processing - Rafael C. Gonzalez](https://www.amazon.com/Digital-Image-Processing-Rafael-Gonzalez/dp/013168728X)  
-- [Scikit-image Documentation](https://scikit-image.org/)  
+- Slide bài giảng Xử lý ảnh số – Văn Lang University  
 - [OpenCV Documentation](https://docs.opencv.org/)  
-- Slide bài giảng Nhập môn Xử lý ảnh số - Văn Lang University
+- [Digital Image Processing – Gonzalez & Woods](https://www.amazon.com/Digital-Image-Processing-Rafael-Gonzalez/dp/013168728X)  
